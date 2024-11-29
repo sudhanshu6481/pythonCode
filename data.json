@@ -1,0 +1,10 @@
+{
+    "student": "John Doe",
+    "age": 15,
+    "city": "Delhi",
+    "hobbies": [
+        "reading",
+        "traveling",
+        "coding"
+    ]
+}
