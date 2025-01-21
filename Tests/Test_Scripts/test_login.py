@@ -1,5 +1,7 @@
 import pytest
 
+import json
+
 from selenium import webdriver
 
 from selenium.webdriver.chrome.service import Service as ChromiumService
@@ -18,10 +20,17 @@ from selenium.common.exceptions import TimeoutException
 
 from pytest_bdd import scenarios, given, when, then
 
+# Load the JSON file
+try:
+    with open('/home/sudhanshugupta/PycharmProjects/PythonProject/Tests/ObjectFactory/ObjectRepository.json', 'r') as file:
+       data = json.load(file)
+except json.JSONDecodeError as e:
+    print(f"JSON decoding failed: {e}")
+
 scenarios('../Features/login.feature')
 
-LOADING_ELEMENT_XPATH = "//*[@class='MuiCircularProgress-svg']"
-SHORT_TIMEOUT  = 5   # give enough time for the loading element to appear
+LOADING_ELEMENT_XPATH = data["LOADING_ELEMENT_XPATH"]
+SHORT_TIMEOUT  = 10   # give enough time for the loading element to appear
 LONG_TIMEOUT = 30  # give enough time for loading to finish
 
 @pytest.fixture
@@ -53,23 +62,23 @@ def enter_credentials(driver):
 
    #Enter username
 
-   driver.find_element(by=By.XPATH, value="//label[text()='Email']/following-sibling::div//input").send_keys("karate003.automation@gmail.com")
+   driver.find_element(By.XPATH, data["UserName"]).send_keys("karate003.automation@gmail.com")
 
-   driver.find_element(by=By.XPATH,value="//span[text()='SUBMIT']/..").click()
+   driver.find_element(By.XPATH, data["SubmitButton"]).click()
 
-   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, "//input[@type='password']")))
+   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Password"])))
 
    #Enter password
 
-   driver.find_element(by=By.XPATH,value="//input[@type='password']").send_keys("Cloudsufi@123")
+   driver.find_element(By.XPATH,data["Password"]).send_keys("Cloudsufi@123")
 
    #click submit
 
-   driver.find_element(by=By.XPATH,value="//span[text()='SUBMIT']/..").click()
+   driver.find_element(By.XPATH,data["SubmitButton"]).click()
 
    #wait for loader to disappear
    try:
-      WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, LOADING_ELEMENT_XPATH)))
+      WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["LOADING_ELEMENT_XPATH"])))
 
    except TimeoutException:
       pass
@@ -78,6 +87,6 @@ def enter_credentials(driver):
 
 def verify_login(driver):
 
-   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, "//img[@src='/static/media/rni-logo.c4fc60cb.svg']")))
+   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Logo"])))
 
    assert driver.title=="RightNow Track"

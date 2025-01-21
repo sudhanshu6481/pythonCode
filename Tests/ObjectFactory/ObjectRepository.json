@@ -1,0 +1,7 @@
+{
+  "LOADING_ELEMENT_XPATH" : "//*[@class='MuiCircularProgress-svg']",
+  "UserName" : "//label[text()='Email']/following-sibling::div//input",
+  "SubmitButton" : "//span[text()='SUBMIT']/..",
+  "Password" : "//input[@type='password']",
+  "Logo" : "//img[@src='/static/media/rni-logo.c4fc60cb.svg']"
+}
