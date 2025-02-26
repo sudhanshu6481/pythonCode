@@ -23,4 +23,4 @@ def enter_text(driver, xpath, text, timeout=SHORT_TIMEOUT):
         element.send_keys(text)
 
     except TimeoutException:
-        raise Exception(f"Element with XPath '{xpath}' was not clickable within {timeout} seconds.")
+        raise Exception(f"Element with XPath '{xpath}' was not visible {timeout} seconds.")

@@ -10,16 +10,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from webdriver_manager.core.os_manager import ChromeType
 
-from selenium.webdriver.common.by import By
-
-from selenium.webdriver.support import expected_conditions as EC
-
-from selenium.webdriver.support.wait import WebDriverWait
-
 from selenium.common.exceptions import TimeoutException
 
 from pytest_bdd import scenarios, given, when, then
 
+import sys
+import os
+
+# Get the absolute path of the project root
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
+from Tests.Actions.ClickElement import click_element
+from Tests.Actions.EnterText import enter_text
+from Tests.Actions.WaitTillElementIsPresent import wiat_for_element
 # Load the JSON file
 try:
     with open('/home/sudhanshugupta/PycharmProjects/PythonProject/Tests/ObjectFactory/ObjectRepository.json', 'r') as file:
@@ -27,9 +30,14 @@ try:
 except json.JSONDecodeError as e:
     print(f"JSON decoding failed: {e}")
 
+try:
+    with open('/home/sudhanshugupta/PycharmProjects/PythonProject/Tests/env.json', 'r') as env:
+       credentials = json.load(env)
+except json.JSONDecodeError as e:
+    print(f"JSON decoding failed: {e}")
+
 scenarios('../Features/login.feature')
 
-LOADING_ELEMENT_XPATH = data["LOADING_ELEMENT_XPATH"]
 SHORT_TIMEOUT  = 10   # give enough time for the loading element to appear
 LONG_TIMEOUT = 30  # give enough time for loading to finish
 
@@ -47,14 +55,9 @@ def driver():
 
 def navigate_to_login(driver):
 
-   driver.get("https://qa-track.rightnowinventory.com/")
+   driver.get(credentials["base_url"])
 
-   #wait for loader to disappear
-   try:
-      WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, LOADING_ELEMENT_XPATH)))
-
-   except TimeoutException:
-      pass
+   driver.maximize_window()
 
 @when('the user enters valid credentials')
 
@@ -62,23 +65,28 @@ def enter_credentials(driver):
 
    #Enter username
 
-   driver.find_element(By.XPATH, data["UserName"]).send_keys("karate003.automation@gmail.com")
+   enter_text(driver,data["UserName"],credentials["username"])
+   #driver.find_element(By.XPATH, data["UserName"]).send_keys(credentials["username"])
 
-   driver.find_element(By.XPATH, data["SubmitButton"]).click()
+   click_element(driver,data["SubmitButton"])
+   #driver.find_element(By.XPATH, data["SubmitButton"]).click()
 
-   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Password"])))
+   wiat_for_element(driver, data["Password"], SHORT_TIMEOUT)
+   #WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Password"])))
 
    #Enter password
 
-   driver.find_element(By.XPATH,data["Password"]).send_keys("Cloudsufi@123")
+   enter_text(driver, data["Password"], credentials["password"])
+   #driver.find_element(By.XPATH,data["Password"]).send_keys(credentials["password"])
 
    #click submit
 
-   driver.find_element(By.XPATH,data["SubmitButton"]).click()
+   click_element(driver,data["SubmitButton"])
 
    #wait for loader to disappear
    try:
-      WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["LOADING_ELEMENT_XPATH"])))
+      wiat_for_element(driver, data["LOADING_ELEMENT_XPATH"], SHORT_TIMEOUT)
+      #WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["LOADING_ELEMENT_XPATH"])))
 
    except TimeoutException:
       pass
@@ -87,6 +95,7 @@ def enter_credentials(driver):
 
 def verify_login(driver):
 
-   WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Logo"])))
+   wiat_for_element(driver, data["Logo"], SHORT_TIMEOUT)
+   #WebDriverWait(driver, SHORT_TIMEOUT).until(EC.presence_of_element_located((By.XPATH, data["Logo"])))
 
    assert driver.title=="RightNow Track"
