@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "test:smoke": "pytest -m smoke --html=report.html --self-contained-html",
+    "test:regression": "pytest -m regression --html=report.html --self-contained-html",
+    "test:all": "pytest --html=report.html --self-contained-html"
+  }
+}
